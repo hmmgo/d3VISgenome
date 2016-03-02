@@ -3,10 +3,71 @@
   <title>
     
   </title>
+  <meta charset="utf-8">
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js"></script>
   </head>
   <body>
-    <div></div>
+    <div>
+
+
+circle {
+  fill: rgb(31, 119, 180);
+  fill-opacity: .25;
+  stroke: rgb(31, 119, 180);
+  stroke-width: 1px;
+}
+
+.leaf circle {
+  fill: #ff7f0e;
+  fill-opacity: 1;
+}
+
+text {
+  font: 10px sans-serif;
+}
+
+</style>
+
+<script>
+//copyright http://bl.ocks.org/mbostock/4063530
+var box = d3.format(",d");
+
+var pack = d3.layout.pack()
+    .size([996, 996])
+    .value(function(d) { return d.size; });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", 1000)
+    .attr("height", 1000)
+  .append("g")
+    .attr("transform", "translate(2,2)");
+
+d3.json("new.json", function(error, root) {
+  if (error) throw error;
+
+  var svgNode = svg.datum(root).selectAll(".node")
+      .data(pack.nodes)
+    .enter().append("g")
+      .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+  svgNode.append("title")
+      .text(function(d) { return d.name + (d.children ? "" : ": " + box(d.size)); });
+
+  svgNode.append("circle")
+      .attr("r", function(d) { return d.r; });
+
+  svgNode.filter(function(d) { return !d.children; }).append("text")
+      .attr("dy", ".3em")
+      .style("text-anchor", "middle")
+      .text(function(d) { return d.name.substring(0, d.r / 3); });
+});
+
+d3.select(self.frameElement).style("height", 1000 + "px");
+
+</script>
+
+    </div>
   </body>
 </html>
